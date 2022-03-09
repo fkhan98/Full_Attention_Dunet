@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     model_path = "files/model.h5"
     batch_size = 16
-    epochs = 1
+    epochs = 30
     lr = 1e-4
     shape = (192, 256, 3)
 
@@ -87,11 +87,12 @@ if __name__ == "__main__":
     model.compile(loss=dice_loss, optimizer=Adam(lr), metrics=metrics)
 
     callbacks = [
-        ModelCheckpoint(model_path),
-        ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=20),
+        ModelCheckpoint(model_path,monitor='val_loss', verbose=2, 
+                             save_best_only=True, mode='min'),
+        ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10),
         CSVLogger("files/data.csv"),
         TensorBoard(),
-        EarlyStopping(monitor='val_loss', patience=50, restore_best_weights=False)
+        EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=False)
     ]
 
     train_steps = (len(train_x)//batch_size)
